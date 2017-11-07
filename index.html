@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>3d城市</title>
+		<style type="text/css">
+			*{
+				margin:0;
+				padding:0;
+			}
+			html,body{
+				height:100%;
+				background-color:#5596BC;
+				perspective:800px;
+			}
+			div,b,em{
+				transform-style:preserve-3d;
+				position:absolute;
+			}
+			/*地皮*/
+			#cidy3d{
+				left:50%;
+				top:50%;
+				/* margin-left:-200px;
+				margin-top:-200px;
+				width:400px;
+				height:400px; */
+				background-color:#B9D2E0;
+				transform:rotateX(60deg) rotateZ(-120deg);
+				animation:rotate 50s linear infinite;
+			}
+			#cidy3d  div{
+			}
+			#cidy3d  div.a b{
+				background-image:url("images/1.png");
+			}
+			#cidy3d  div.b b{
+				background-image:url("images/2.png");
+			}
+			#cidy3d  div.c b{
+				background-image:url("images/3.png");
+			}
+			#cidy3d  div.d b{
+				background-image:url("images/4.png");
+			}
+			#cidy3d  div.e b{
+				background-image:url("images/5.png");
+			}
+			#cidy3d  div b{
+				height:100%;
+				background-color:rgba(176,208,223,0.9);
+				transform:rotateX(90deg);
+				transform-origin:0 0;
+			}
+			#cidy3d  div b>b{
+				background-color:rgba(128,174,197,0.9);
+				transform:rotateY(90deg);
+				transform-origin:0 0;
+			}
+			#cidy3d  div b>b>b{
+				right:0;
+				background-color:rgba(176,208,223,0.9);
+				transform:rotateY(90deg);
+				transform-origin:100% 0;
+			}
+			#cidy3d  div b>b>b>b{
+				left:0;
+				background-color:rgba(128,174,187,0.9);
+				transform:rotateY(90deg);
+				transform-origin:0 100%;
+			}
+			#cidy3d  div b>b>b>b>em{
+				bottom:0;
+				background-color:#d0e4ef;
+				transform:rotateX(-90deg);
+				transform-origin:0 100%;
+			}
+			@keyframes rotate{
+				from{
+					transform:rotateX(60deg) rotateZ(-180deg);
+				}
+				to{
+					transform:rotateX(60deg) rotateZ(180deg);
+				}
+			}
+		</style>
+		
+	</head>
+	<body>
+	<!-- 
+		<div id="cidy3d">
+			<div class="b" style="height:150px;top:0px;left:0px">
+				<b style="width:20px;">
+					<b style="width:30px;">
+						<b style="width:20px;">
+							<b style="width:30px">
+								<em style="width:30px;height:20px;"></em>
+							</b>
+						</b>
+					</b>
+				</b>
+			</div>
+		</div>
+	-->
+		<script type="text/javascript">
+			function City3d(base){
+				this.base = base;
+				this.max = 60;
+			};
+			// 声明 3d城市
+			City3d.prototype.build = function(parent){
+				this.buildArea(parent);
+				//this.buildEstate(100,200);
+				//this.buildEstate(20,60);
+
+				//this.buildEstate(200,240);
+				//this.buildEstate(80,160);
+
+				//this.buildEstate(130,140);
+				//this.buildEstate(40,100);
+				
+				// 列*行 = 楼盘的个数
+				for (var i=0;i<this.base;i++)
+				{
+					for (var j=0;j<this.base;j++)
+					{
+						this.buildEstate(i*this.max,j*this.max);
+					};
+				};
+			};
+			// 创建 地皮
+			City3d.prototype.buildArea = function(parent){
+				this.city = document.getElementById("cidy3d");
+				//点击 重新创建城市
+				if( !this.city ) // 如果没有就创建
+				{
+					this.city = document.createElement("div");
+					this.city.id = "cidy3d";
+					this.city.onclick = function(){
+						city3d.build(document.body);
+					};
+				}else{
+					//已经有内容，就清空
+					this.city.innerHTML = ''; 
+				};
+				// 动态添加宽高
+				var num = this.base*this.max;
+				this.city.style.height = this.city.style.width = num +'px';
+				this.city.style.marginLeft = this.city.style.marginTop = -(num/2)+'px';
+				parent.appendChild(this.city);
+			};
+
+			// 创建楼盘 
+			City3d.prototype.buildEstate = function(left,top){
+				var estate = document.createElement("div"); 
+				estate.className = this.getStyle(); // 随机生成
+				estate.style.height = this.getHeight()+'px'; // 随机生成
+				estate.style.left = left+'px'; // 随机生成
+				estate.style.top = top+'px'; // 随机生成
+				this.city.appendChild(estate);
+				
+				var b1 = document.createElement("b");
+				b1.style.width = "20px";
+				estate.appendChild(b1);
+
+				var b2 = document.createElement("b");
+				b2.style.width = "30px";
+				b1.appendChild(b2);
+				
+				var b3 = document.createElement("b");
+				b3.style.width = "20px";
+				b2.appendChild(b3);
+
+				var b4 = document.createElement("b");
+				b4.style.width = "30px";
+				b3.appendChild(b4);
+
+				var em = document.createElement("em");
+				em.style.width = "30px";
+				em.style.height = "20px";
+				b4.appendChild(em);
+			};
+
+			// 生成随机数 a b c d e
+			City3d.prototype.styles = ["a","b","c","d","e"];
+			City3d.prototype.getStyle = function(){ 
+				return this.styles[(Math.random()*100 << 2)%5];
+			};
+
+			// 随机生成高度
+			City3d.prototype.getHeight = function(){ // 20~150
+				return (Math.random()*1000 << 2)%130+20;
+			};
+
+			// 随机生成宽度
+			City3d.prototype.getWidth = function(){ // 20~40
+				return (Math.random()*1000 << 2)%20+20;
+			};
+			var city3d = new City3d(10);
+			city3d.build(document.body);
+		</script>
+	</body>
+</html>
